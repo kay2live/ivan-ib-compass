@@ -9,14 +9,16 @@ A responsive IB study tracker for syllabus mastery, practice scores, focus gaps,
 - Practice score history and automatic focus-gap detection
 - Spaced-repetition flashcards
 - Supabase email authentication and per-user cloud sync with Row Level Security
+- Shared family workspaces with Owner and Student roles
 - Responsive PWA layout for desktop and mobile
 
 ## Supabase setup
 
 1. Create a Supabase project.
 2. Run `supabase-schema.sql` in the Supabase SQL Editor.
-3. Set the project URL and publishable key in `supabase-config.js`.
-4. Add the deployed URL under Authentication → URL Configuration.
+3. Run `supabase-workspace-schema.sql` to enable family sharing.
+4. Set the project URL and publishable key in `supabase-config.js`.
+5. Add the deployed URL under Authentication → URL Configuration.
 
 ## Local preview
 
