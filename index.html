@@ -168,6 +168,28 @@
     </form>
   </dialog>
 
+  <dialog id="workspaceDialog">
+    <form method="dialog" id="workspaceForm">
+      <div class="dialog-heading"><div><span class="eyebrow">FAMILY WORKSPACE</span><h2>가족 계정 관리</h2></div><button class="close" value="cancel" aria-label="닫기">×</button></div>
+      <div id="workspaceCurrent" class="workspace-current"></div>
+      <div id="workspaceSetup" class="workspace-setup">
+        <div class="workspace-option">
+          <h3>부모 계정</h3><p>새 Workspace를 만들고 Ivan을 초대합니다. 현재 데이터가 자동으로 이전됩니다.</p>
+          <label>Workspace 이름<input name="workspaceName" placeholder="예: Ivan's IB Workspace" /></label>
+          <button type="button" class="primary" id="createWorkspace">Workspace 만들기</button>
+        </div>
+        <div class="workspace-divider"><span>또는</span></div>
+        <div class="workspace-option">
+          <h3>Ivan 계정</h3><p>부모 계정에서 받은 8자리 초대 코드를 입력합니다.</p>
+          <label>초대 코드<input name="inviteCode" maxlength="8" placeholder="AB12CD34" /></label>
+          <button type="button" class="secondary" id="joinWorkspace">코드로 참여</button>
+        </div>
+      </div>
+      <p class="form-error" id="workspaceError"></p>
+      <div class="dialog-actions"><button type="button" class="secondary" id="workspaceSignOut">로그아웃</button><button value="cancel" class="primary">닫기</button></div>
+    </form>
+  </dialog>
+
   <div id="toast" class="toast" role="status"></div>
   <script src="supabase-config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
