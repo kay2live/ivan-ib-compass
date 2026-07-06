@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f5f2ea" />
+  <meta name="description" content="Ivan의 IB 학습 진도와 연습 기록을 한곳에서 관리합니다." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Ivan's IB Compass</title>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#" aria-label="Ivan's IB Compass 홈">
+        <span class="brand-mark">I</span>
+        <span><b>IB Compass</b><small>Ivan's study space</small></span>
+      </a>
+      <nav class="main-nav" aria-label="주 메뉴">
+        <button class="nav-item active" data-view="dashboard"><span>⌂</span> Overview</button>
+        <button class="nav-item" data-view="syllabus"><span>◫</span> Syllabus</button>
+        <button class="nav-item" data-view="practice"><span>↗</span> Practice</button>
+        <button class="nav-item" data-view="flashcards"><span>◇</span> Flashcards <em id="cardBadge">0</em></button>
+        <button class="nav-item" data-view="focus"><span>◎</span> Focus list <em id="gapBadge">0</em></button>
+      </nav>
+      <div class="sidebar-note">
+        <span class="eyebrow">THIS WEEK</span>
+        <strong id="weeklyTarget">0 / 15</strong>
+        <span>objectives completed</span>
+        <div class="mini-progress"><i id="weeklyBar"></i></div>
+      </div>
+      <div class="profile"><span class="avatar">IV</span><span><b>Ivan</b><small>IB Diploma · HL</small></span></div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <span class="mobile-brand">IB Compass</span>
+          <p id="todayLabel"></p>
+        </div>
+        <div class="top-actions">
+          <span class="sync-status" id="syncStatus"><i></i> 이 기기에 저장됨</span>
+          <button class="secondary account-button" id="accountButton">로그인</button>
+          <button class="icon-button" id="resetButton" title="샘플 데이터 초기화">↻</button>
+          <button class="primary small" id="quickAdd">＋ 기록 추가</button>
+        </div>
+      </header>
+
+      <section id="dashboardView" class="view active">
+        <div class="hero">
+          <div>
+            <span class="eyebrow">ACADEMIC OVERVIEW</span>
+            <h1>Good progress, Ivan.<br><i>Keep the rhythm.</i></h1>
+            <p>학교 진도와 개인 학습 사이의 간격을 확인하고, 오늘 가장 중요한 것에 집중하세요.</p>
+          </div>
+          <div class="hero-score"><span>Overall mastery</span><strong id="overallMastery">0%</strong><small id="overallDelta">세 과목 기준</small></div>
+        </div>
+
+        <div class="section-heading"><div><span class="eyebrow">YOUR SUBJECTS</span><h2>과목별 현황</h2></div><button class="text-button" data-go="syllabus">전체 syllabus 보기 →</button></div>
+        <div id="subjectCards" class="subject-grid"></div>
+
+        <div class="dashboard-grid">
+          <article class="panel focus-panel">
+            <div class="panel-heading"><div><span class="eyebrow">NEEDS ATTENTION</span><h2>우선 복습</h2></div><button class="text-button" data-go="focus">모두 보기 →</button></div>
+            <div id="priorityList" class="priority-list"></div>
+          </article>
+          <article class="panel chart-panel">
+            <div class="panel-heading"><div><span class="eyebrow">RECENT PERFORMANCE</span><h2>최근 점수</h2></div></div>
+            <div id="scoreChart" class="score-chart" aria-label="최근 연습 점수 차트"></div>
+            <div class="chart-legend"><span><i></i>점수</span><span><i class="target"></i>목표 75%</span></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="syllabusView" class="view">
+        <div class="page-heading row"><div><span class="eyebrow">SYLLABUS TRACKER</span><h1>무엇을 알고 있는지<br><i>정확하게 보기.</i></h1></div><button class="primary" id="addObjective">＋ 항목 추가</button></div>
+        <div class="toolbar">
+          <div id="subjectTabs" class="subject-tabs"></div>
+          <label class="search"><span>⌕</span><input id="searchInput" type="search" placeholder="코드나 학습내용 검색" /></label>
+          <select id="statusFilter" aria-label="상태 필터"><option value="all">모든 상태</option><option value="done">완료</option><option value="progress">진행 중</option><option value="todo">미완</option><option value="gap">Gap만</option></select>
+        </div>
+        <div class="syllabus-summary" id="syllabusSummary"></div>
+        <div id="syllabusList" class="syllabus-list"></div>
+      </section>
+
+      <section id="practiceView" class="view">
+        <div class="page-heading row"><div><span class="eyebrow">PRACTICE LOG</span><h1>연습이 실력으로<br><i>쌓이는 곳.</i></h1></div><button class="primary" id="addPractice">＋ 새 연습 기록</button></div>
+        <div class="stats-row" id="practiceStats"></div>
+        <div class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>날짜</th><th>과목</th><th>연습 / 시험</th><th>Topic</th><th>점수</th><th>메모</th></tr></thead><tbody id="practiceTable"></tbody></table></div></div>
+      </section>
+
+      <section id="flashcardsView" class="view">
+        <div class="page-heading row"><div><span class="eyebrow">SPACED REPETITION</span><h1>기억할 때까지,<br><i>알맞은 간격으로.</i></h1><p>오늘 복습할 카드를 먼저 학습하고, 기억 난이도에 따라 다음 복습일을 자동으로 조정합니다.</p></div><button class="primary" id="addFlashcard">＋ 새 카드</button></div>
+        <div class="stats-row" id="flashcardStats"></div>
+        <div class="flash-layout">
+          <section class="review-stage panel" id="reviewStage"></section>
+          <aside class="panel card-library"><div class="panel-heading"><div><span class="eyebrow">CARD LIBRARY</span><h2>내 카드</h2></div><select id="cardSubjectFilter" aria-label="카드 과목 필터"><option value="all">모든 과목</option></select></div><div id="cardLibrary"></div></aside>
+        </div>
+      </section>
+
+      <section id="focusView" class="view">
+        <div class="page-heading"><div><span class="eyebrow">FOCUS LIST</span><h1>다음 공부를<br><i>고민하지 않도록.</i></h1><p>학교에서 배웠지만 아직 완료하지 않았거나 자신감이 낮은 항목입니다.</p></div></div>
+        <div id="focusGrid" class="focus-grid"></div>
+      </section>
+    </main>
+
+    <nav class="mobile-nav" aria-label="모바일 메뉴">
+      <button class="active" data-view="dashboard"><span>⌂</span>홈</button><button data-view="syllabus"><span>◫</span>진도</button><button data-view="practice"><span>↗</span>연습</button><button data-view="flashcards"><span>◇</span>카드</button><button data-view="focus"><span>◎</span>집중</button>
+    </nav>
+  </div>
+
+  <dialog id="practiceDialog">
+    <form method="dialog" id="practiceForm">
+      <div class="dialog-heading"><div><span class="eyebrow">NEW ENTRY</span><h2>연습 기록 추가</h2></div><button class="close" value="cancel" aria-label="닫기">×</button></div>
+      <div class="form-grid">
+        <label>날짜<input name="date" type="date" required /></label>
+        <label>과목<select name="subject" required></select></label>
+        <label class="wide">연습 / 시험 이름<input name="name" required placeholder="예: Paper 1 timed practice" /></label>
+        <label>Topic<input name="topic" placeholder="예: A2 Networks" /></label>
+        <label>점수 (%)<input name="score" type="number" min="0" max="100" required placeholder="75" /></label>
+        <label class="wide">메모<textarea name="notes" rows="3" placeholder="실수, 개선점, 다음 복습 내용"></textarea></label>
+      </div>
+      <div class="dialog-actions"><button value="cancel" class="secondary">취소</button><button value="default" class="primary" id="savePractice">저장하기</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="flashcardDialog">
+    <form method="dialog" id="flashcardForm">
+      <div class="dialog-heading"><div><span class="eyebrow">NEW FLASHCARD</span><h2>Flashcard 만들기</h2></div><button class="close" value="cancel" aria-label="닫기">×</button></div>
+      <div class="form-grid">
+        <label>과목<select name="subject" required></select></label>
+        <label>Syllabus 코드<input name="code" placeholder="예: A2.4.4" /></label>
+        <label>카드 유형<select name="type"><option>Concept</option><option>Definition</option><option>Formula</option><option>Diagram</option><option>Error</option></select></label>
+        <label>태그<input name="tag" placeholder="예: Networks" /></label>
+        <label class="wide">앞면 — 질문<textarea name="front" rows="3" required placeholder="무엇을 기억해야 하나요?"></textarea></label>
+        <label class="wide">뒷면 — 정답<textarea name="back" rows="4" required placeholder="간결하고 정확한 정답"></textarea></label>
+      </div>
+      <div class="dialog-actions"><button value="cancel" class="secondary">취소</button><button value="default" class="primary" id="saveFlashcard">카드 저장</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="objectiveDialog">
+    <form method="dialog" id="objectiveForm">
+      <input type="hidden" name="originalId" />
+      <div class="dialog-heading"><div><span class="eyebrow">SYLLABUS EDITOR</span><h2 id="objectiveDialogTitle">항목 추가</h2></div><button class="close" value="cancel" aria-label="닫기">×</button></div>
+      <div class="form-grid">
+        <label>과목<select name="subject" required></select></label>
+        <label>코드<input name="code" required placeholder="예: A5.1.1" /></label>
+        <label class="wide">Theme / Topic 그룹<input name="group" required placeholder="예: A5 · New Topic" /></label>
+        <label class="wide">학습 목표<input name="title" required placeholder="추적할 학습 목표" /></label>
+        <label>분류<input name="category" placeholder="예: HL · Theory" /></label>
+        <label>레벨<select name="level"><option>SL + HL</option><option>HL only</option><option>SL only</option></select></label>
+      </div>
+      <div class="dialog-actions edit-actions"><button type="button" class="danger hidden" id="archiveObjective">항목 보관</button><span></span><button value="cancel" class="secondary">취소</button><button value="default" class="primary" id="saveObjective">저장</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="authDialog">
+    <form method="dialog" id="authForm">
+      <div class="dialog-heading"><div><span class="eyebrow">CLOUD SYNC</span><h2>IB Compass 로그인</h2></div><button class="close" value="cancel" aria-label="닫기">×</button></div>
+      <p class="auth-intro">로그인하면 진도, 연습 기록과 Flashcard가 PC와 휴대폰에서 자동으로 동기화됩니다.</p>
+      <div class="form-grid auth-fields">
+        <label class="wide">이메일<input name="email" type="email" autocomplete="email" required placeholder="name@example.com" /></label>
+        <label class="wide">비밀번호<input name="password" type="password" minlength="6" autocomplete="current-password" required placeholder="6자 이상" /></label>
+      </div>
+      <p class="form-error" id="authError"></p>
+      <div class="dialog-actions auth-actions"><button value="cancel" class="secondary">취소</button><button type="button" class="secondary" id="signUpButton">처음 가입</button><button type="button" class="primary" id="signInButton">로그인</button></div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status"></div>
+  <script src="supabase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
