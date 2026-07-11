@@ -1,3 +1,4 @@
+const APP_VERSION='36';
 const SUBJECTS = {
   physics: { name:'Physics HL', short:'Physics', icon:'φ', color:'#587b96', tint:'#dfe9ee', groups:{
     'A · Space, Time & Motion':[
@@ -287,6 +288,9 @@ function rateCard(rating){const card=data.flashcards.find(c=>c.id===currentCardI
 function renderFocus(){const gaps=gapItems();document.querySelector('#focusGrid').innerHTML=gaps.map(o=>{const p=data.progress[o.id];return `<article class="focus-card"><div><code>${o.code} · ${SUBJECTS[o.subject].short}</code><h3>${o.title}</h3><p>${p.status==='progress'?'현재 학습 중':'학교 진도 완료 · Ivan 미완'} · 자신감 ${p.confidence||0}/5</p></div><button data-complete="${o.id}">완료로 표시</button></article>`}).join('')||'<div class="panel empty">멋집니다. 현재 학교 진도와 Ivan의 학습 사이에 Gap이 없습니다.</div>'}
 function switchView(view){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===view+'View'));document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));window.scrollTo({top:0,behavior:'smooth'})}
 function toast(msg){const el=document.querySelector('#toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1800)}
+function showUpdateBanner(version){const el=document.querySelector('#updateBanner');if(!el)return;el.querySelector('span').textContent=`새 버전 v${version}이 준비되었습니다.`;el.classList.add('show')}
+async function applyAppUpdate(){try{if('serviceWorker'in navigator){const regs=await navigator.serviceWorker.getRegistrations();await Promise.all(regs.map(r=>r.update()))}if(window.caches){const keys=await caches.keys();await Promise.all(keys.filter(k=>k.startsWith('ib-compass-')).map(k=>caches.delete(k)))}}catch(e){console.warn('Update refresh skipped cache cleanup',e)}location.replace(location.origin+location.pathname)}
+async function checkForAppUpdate(){try{const res=await fetch(`version.json?t=${Date.now()}`,{cache:'no-store'});if(!res.ok)return;const info=await res.json();if(info.version&&String(info.version)!==APP_VERSION)showUpdateBanner(info.version)}catch(e){}}
 function openDialog(){const f=document.querySelector('#practiceForm');f.reset();f.elements.date.value=new Date().toISOString().slice(0,10);document.querySelector('#practiceDialog').showModal()}
 function openCardDialog(){document.querySelector('#flashcardForm').reset();document.querySelector('#flashcardDialog').showModal()}
 function findObjective(id){return Object.keys(SUBJECTS).flatMap(k=>allObjectives(k)).find(o=>o.id===id)}
@@ -315,6 +319,7 @@ document.addEventListener('change',e=>{if(e.target.matches('[data-status]')){con
 document.querySelector('#searchInput').addEventListener('input',renderSyllabus);document.querySelector('#statusFilter').addEventListener('change',renderSyllabus);
 document.querySelector('#quickAdd').addEventListener('click',openDialog);document.querySelector('#addPractice').addEventListener('click',openDialog);
 document.querySelector('#addFlashcard').addEventListener('click',openCardDialog);document.querySelector('#addObjective').addEventListener('click',()=>openObjectiveDialog());
+const updateNowButton=document.querySelector('#updateNow'),dismissUpdateButton=document.querySelector('#dismissUpdate');if(updateNowButton)updateNowButton.addEventListener('click',applyAppUpdate);if(dismissUpdateButton)dismissUpdateButton.addEventListener('click',()=>{const el=document.querySelector('#updateBanner');if(el)el.classList.remove('show')});
 document.querySelector('#resetButton').addEventListener('click',()=>{if(confirm('저장된 변경사항을 지우고 샘플 상태로 되돌릴까요?')){localStorage.removeItem(KEY);data=loadData();save();renderAll();toast('샘플 데이터로 초기화했습니다')}});
 const subjectSelect=document.querySelector('#practiceForm [name=subject]');subjectSelect.innerHTML=Object.entries(SUBJECTS).map(([k,s])=>`<option value="${k}">${s.name}</option>`).join('');
 const subjectOptions=Object.entries(SUBJECTS).map(([k,s])=>`<option value="${k}">${s.name}</option>`).join('');document.querySelector('#flashcardForm [name=subject]').innerHTML=subjectOptions;document.querySelector('#objectiveForm [name=subject]').innerHTML=subjectOptions;document.querySelector('#cardSubjectFilter').innerHTML='<option value="all">모든 과목</option>'+subjectOptions;document.querySelector('#cardSubjectFilter').addEventListener('change',renderFlashcards);
@@ -332,3 +337,4 @@ document.querySelector('#todayLabel').textContent=new Intl.DateTimeFormat('ko-KR
 if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js');
 renderAll();
 initCloud();
+checkForAppUpdate();
