@@ -1,5 +1,5 @@
-const CACHE='ib-compass-v48';
-const ASSETS=['./','./index.html','./styles.css?v=48','./app.js?v=48','./supabase-config.js?v=48','./manifest.webmanifest','./version.json'];
+const CACHE='ib-compass-v53';
+const ASSETS=['./','./index.html','./styles.css?v=53','./app.js?v=53','./supabase-config.js?v=53','./manifest.webmanifest','./version.json'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
